@@ -52,7 +52,6 @@ def main():
                 minus[NP_i] = cons
             else:                      # non update
                 next_gen[NP_i] = current_gen[NP_i]
-            # print(score[NP_i])
         """ 世代交代 """
         current_gen = next_gen
         

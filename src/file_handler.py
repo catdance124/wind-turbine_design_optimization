@@ -5,7 +5,8 @@ from setting import *
 
 file_dir = '../evaluation'
 start = datetime.datetime.now()
-os.makedirs('../logs', exist_ok=True)
+logs_dir = '../logs'
+os.makedirs(logs_dir, exist_ok=True)
 
 def write_vars(trial_individual):
     with open(f'{file_dir}/pop_vars_eval.txt', 'w') as f:
@@ -32,8 +33,7 @@ def read_cons():
     return error_count
 
 def write_logs(gen_count, score, raw_score, minus, best_individual):
-    print(gen_count, score, raw_score, minus)
-    with open(f'logs/{start.strftime("%m-%d %H_%M_%S")}.csv', 'a', newline="") as f:
+    with open(f'{logs_dir}/{start.strftime("%m-%d %H_%M_%S")}.csv', 'a', newline="") as f:
         writer = csv.writer(f)
         if gen_count==2:
             writer.writerow([f'NP:{NP}', f'CR:{CR}', f'F:{F}'])
