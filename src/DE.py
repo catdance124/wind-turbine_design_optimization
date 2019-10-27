@@ -5,22 +5,27 @@ from setting import *
 from file_handler import write_vars, read_objs, read_cons, write_logs
 
 
-def evaluate(trial_individual):
+def evaluate(trial_individuals):
     # 解候補出力
-    write_vars(trial_individual)
+    write_vars(trial_individuals)
     # 評価モジュール実行
     os.system('evaluation.bat')
     # 結果受け取り
-    return read_objs(), read_cons()
+    objs = read_objs()
+    cons = read_cons()
+    # スコア算出
+    errors_n = np.sum(cons<0, axis=1)
+    scores = objs + errors_n*1000
+    return scores
 
 def main():
     # init
-    trial_individual = [0] * D
+    trial_individuals = np.zeros((NP,D))
     current_gen = np.random.uniform(0, 1, (NP, D))
+    for D_i in range(D):
+        current_gen[:, D_i] = np.random.uniform(LOWER[D_i], UPPER[D_i], NP)
     next_gen = current_gen.copy()
-    score = np.full(NP, 10e+10)
-    minus = np.full(NP, 10e+10)
-    raw_score = np.full(NP, 10e+10)
+    scores = np.full(NP, 10e+10)
     
     # generation loop
     for gen_count in range(2, GEN_MAX + 1):
@@ -35,30 +40,29 @@ def main():
             D_i = random.choice(list(range(D)))
             for k in range(1, D+1):
                 if (random.uniform(0, 1) < CR) or (k == D):
-                    trial_individual[D_i] = current_gen[c][D_i] + F*(current_gen[a][D_i] - current_gen[b][D_i])
+                    trial_individuals[NP_i, D_i] = current_gen[c, D_i] + F*(current_gen[a, D_i] - current_gen[b, D_i])
                 else:
-                    trial_individual[D_i] = current_gen[NP_i][D_i]
+                    trial_individuals[NP_i, D_i] = current_gen[NP_i, D_i]
                 D_i = (D_i + 1) % D
-			
-            """ 評価 """
-            objs, cons = evaluate(trial_individual)
-            trial_score = objs + cons*100
+        
+        """ 評価 """
+        trial_scores = evaluate(trial_individuals)
 
-            """ 選択 """
-            if trial_score <= score[NP_i]:    # update
-                next_gen[NP_i] = trial_individual
-                score[NP_i] = trial_score
-                raw_score[NP_i] = objs
-                minus[NP_i] = cons
-            else:                      # non update
-                next_gen[NP_i] = current_gen[NP_i]
+        """ 選択 """
+        update_index = trial_scores <= scores
+        # update
+        next_gen[update_index] = trial_individuals[update_index]
+        scores[update_index] = trial_scores[update_index]
+        # npn update
+        next_gen[~update_index] = current_gen[~update_index]
+
         """ 世代交代 """
         current_gen = next_gen
         
         # 出力処理
-        best = np.argmin(score)
-        print(f'gen:{gen_count}, score:{score[best]}, raw:{raw_score[best]}, minus:{minus[best]}')
-        write_logs(gen_count, score[best], raw_score[best], minus[best], current_gen[best])
+        best = np.argmin(scores)
+        print(f'gen:{gen_count}, score:{scores[best]}')
+        write_logs(gen_count, scores[best], current_gen[best])
 
 
 if __name__ == "__main__":
