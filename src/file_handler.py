@@ -31,10 +31,10 @@ def read_cons():
     return np.array(cons)
 
 def write_logs(gen_count, score, best_individual):
-    with open(f'{logs_dir}/{start.strftime("%m-%d %H_%M_%S")}.csv', 'a', newline="") as f:
+    with open(f'{logs_dir}/{start.strftime("%m-%d %H_%M_%S")}_NP{NP}_CR{CR}_F{F}.csv', 'a', newline="") as f:
         writer = csv.writer(f)
-        if gen_count==2:
-            writer.writerow([f'NP:{NP}', f'CR:{CR}', f'F:{F}'])
+        if gen_count==1:
+            # writer.writerow([f'NP:{NP}', f'CR:{CR}', f'F:{F}'])
             writer.writerow(['gen', 'score', *list(range(1,33))])
         writer.writerow([f'{gen_count:03}', score, *convert_vars(best_individual)])
 

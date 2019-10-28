@@ -14,8 +14,9 @@ def evaluate(trial_individuals):
     objs = read_objs()
     cons = read_cons()
     # スコア算出
-    errors_n = np.sum(cons<0, axis=1)
-    scores = objs + errors_n*1000
+    #errors_n = np.sum(cons<0, axis=1)
+    errors_n = (-1)*np.sum(cons[cons<0])
+    scores = objs + errors_n*100
     return scores
 
 def main():
@@ -25,7 +26,12 @@ def main():
     for D_i in range(D):
         current_gen[:, D_i] = np.random.uniform(LOWER[D_i], UPPER[D_i], NP)
     next_gen = current_gen.copy()
-    scores = np.full(NP, 10e+10)
+    
+    # first evaluation
+    scores = evaluate(current_gen)
+    best = np.argmin(scores)
+    print(f'gen:1, score:{scores[best]}')
+    write_logs(1, scores[best], current_gen[best])
     
     # generation loop
     for gen_count in range(2, GEN_MAX + 1):
@@ -50,6 +56,9 @@ def main():
 
         """ 選択 """
         update_index = trial_scores <= scores
+        print(trial_scores)
+        print(scores)
+        print(update_index)
         # update
         next_gen[update_index] = trial_individuals[update_index]
         scores[update_index] = trial_scores[update_index]
