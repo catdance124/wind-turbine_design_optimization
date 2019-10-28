@@ -23,8 +23,6 @@ def main():
     # init
     trial_individuals = np.zeros((NP,D))
     current_gen = np.random.uniform(0, 1, (NP, D))
-    for D_i in range(D):
-        current_gen[:, D_i] = np.random.uniform(LOWER[D_i], UPPER[D_i], NP)
     next_gen = current_gen.copy()
     
     # first evaluation
@@ -50,8 +48,8 @@ def main():
             for k in range(1, D+1):
                 if (random.uniform(0, 1) < CR) or (k == D):
                     trial_individuals[NP_i, D_i] = current_gen[c, D_i] + F*(current_gen[a, D_i] - current_gen[b, D_i])
-                    if UPPER[D_i] < trial_individuals[NP_i, D_i] < UPPER[D_i]:
-                        trial_individuals[NP_i, D_i] =  current_gen[c, D_i]
+                    if not (0 <= trial_individuals[NP_i, D_i] <= 1):
+                        trial_individuals[NP_i, D_i] =  random.uniform(0, 1)
                 else:
                     trial_individuals[NP_i, D_i] = current_gen[NP_i, D_i]
                 D_i = (D_i + 1) % D

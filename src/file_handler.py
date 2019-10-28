@@ -14,7 +14,7 @@ def write_vars(trial_individuals):
     with open(f'{file_dir}/pop_vars_eval.txt', 'w', newline='') as f:
         writer = csv.writer(f, delimiter='\t')
         for trial_individual in trial_individuals:
-            writer.writerow(convert_vars(trial_individual))
+            writer.writerow(trial_individual)
 
 def read_objs():
     with open(f'{file_dir}/pop_objs_eval.txt', 'r') as f:
@@ -44,7 +44,7 @@ def write_logs(gen_count, score, minus, best_individual):
 #         individual[i] = (x - LOWER[i]) / (UPPER[i] - LOWER[i])
 #     return individual
 
-def convert_vars(individual):
-    ind_min = min(individual)
-    ind_max = max(individual)
-    return [float(i - ind_min) / (ind_max - ind_min) for i in individual]
+# def convert_vars(individual):
+#     ind_min = min(individual)
+#     ind_max = max(individual)
+#     return [float(i - ind_min) / (ind_max - ind_min) for i in individual]
