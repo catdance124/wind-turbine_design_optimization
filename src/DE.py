@@ -15,8 +15,8 @@ def evaluate(trial_individuals):
     cons = read_cons()
     # スコア算出
     minus = np.sum(cons<0, axis=1)
-    errors_n = (-1)*np.sum(cons[cons<0])
-    scores = objs + errors_n*100
+    # errors_n = (-1)*np.sum(cons[cons<0])
+    scores = objs + minus * 10e+8
     return scores, minus
 
 def main():
@@ -47,9 +47,13 @@ def main():
             D_i = random.choice(list(range(D)))
             for k in range(1, D+1):
                 if (random.uniform(0, 1) < CR) or (k == D):
-                    trial_individuals[NP_i, D_i] = current_gen[c, D_i] + F*(current_gen[a, D_i] - current_gen[b, D_i])
-                    if not (0 <= trial_individuals[NP_i, D_i] <= 1):
-                        trial_individuals[NP_i, D_i] =  random.uniform(0, 1)
+                    M = F*(current_gen[a, D_i] - current_gen[b, D_i])
+                    C = current_gen[c, D_i]
+                    trial_individuals[NP_i, D_i] = C + M
+                    if trial_individuals[NP_i, D_i] < 0:
+                        trial_individuals[NP_i, D_i] = - (C + M)
+                    elif 1 < trial_individuals[NP_i, D_i]:
+                        trial_individuals[NP_i, D_i] = 2 - (C + M)
                 else:
                     trial_individuals[NP_i, D_i] = current_gen[NP_i, D_i]
                 D_i = (D_i + 1) % D
